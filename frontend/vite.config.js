@@ -11,7 +11,7 @@ export default defineConfig({
       "/api": {
         target: "https://gamifybeta-1.onrender.com/",
         changeOrigin: true,
-        secure: false, //as http not https
+        secure: true, //as http not https
       },
     },
   },
