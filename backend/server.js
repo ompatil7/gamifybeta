@@ -31,7 +31,8 @@ app.use(cookieParser());
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://gamifybeta.netlify.app/" // Add your Vercel app URL here
+  "https://gamifybeta.netlify.app",
+  "https://gamifybeta.vercel.app" // Add your Vercel app URL here
 ];
 
 app.use(cors({
