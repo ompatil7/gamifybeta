@@ -6,6 +6,7 @@ const protectRoute = async (req, res, next) => {
     console.log("Cookies received: ", req.headers); // Log all cookies
 
     const token = req.cookies.jwt;
+    console.log("token : ", token); // Log all cookies
     if (!token) return res.status(401).json({ error: "Unauthorized" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
