@@ -33,6 +33,11 @@ app.use(
   })
 );
 app.set("trust proxy", 1);
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://gamifyv2.vercel.app');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 //allows you to parse incoming data from request object, req.body
 app.use(express.json({ limit: "50mb" }));
