@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 //next for running the next function after successsfull completions
 const protectRoute = async (req, res, next) => {
   try {
+    console.log("Cookies received: ", req.headers); // Log all cookies
+
     const token = req.cookies.jwt;
     if (!token) return res.status(401).json({ error: "Unauthorized" });
 
