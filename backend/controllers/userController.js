@@ -181,10 +181,79 @@ const followUnfollowUser = async (req, res) => {
   }
 };
 //update user
+// const updateUser = async (req, res) => {
+//   //removed password update
+//   const { name, email, username, bio } = req.body;
+//   // let { profilePic } = req.body;
+//   let profilePic = req.file;
+//   const userId = req.user._id;
+//   try {
+//     let user = await User.findById(userId);
+//     if (!user) return res.status(400).json({ error: "User not found" });
+
+//     if (req.params.id !== userId.toString())
+//       return res
+//         .status(400)
+//         .json({ error: "You cannot update other user's profile" });
+//     // if (password) {
+//     //   const salt = await bcrypt.genSalt(10);
+//     //   const hashedPassword = await bcrypt.hash(password, salt);
+//     //   user.password = hashedPassword;
+//     // }
+
+//     if (profilePic) {
+//       // destroying old pfp
+//       if (user.profilePic) {
+//         await cloudinary.uploader.destroy(
+//           user.profilePic.split("/").pop().split(".")[0]
+//         );
+//       }
+//       // const uploadedResponse = await cloudinary.uploader.upload(profilePic);
+//       const uploadedResponse = await uploadOnCloudinary(profilePic.path);
+//       console.log("user img success", uploadedResponse);
+//       profilePic = uploadedResponse.secure_url;
+//       // Upload the image to Cloudinary
+//       // const uploadedResponse = await cloudinary.uploader.upload(req.file.path);
+//       // profilePic = uploadedResponse.secure_url;
+
+//       // Delete the temporary file
+//       // fs.unlinkSync(req.file.path);
+//     }
+
+//     user.name = name || user.name;
+//     user.email = email || user.email;
+//     user.username = username || user.username;
+//     user.profilePic = profilePic || user.profilePic;
+//     user.bio = bio || user.bio;
+
+//     user = await user.save();
+//     //password should be  null in respionse
+//     user.password = null;
+
+//     //new optimzed update - to update the users in the replies of the post when the user updates their profile
+//     //find all posts that the user has replied and update the username and userProfilePic fields
+//     await Post.updateMany(
+//       //filter
+//       { "replies.userId": userId },
+//       //update
+//       {
+//         $set: {
+//           "replies.$[reply].username": user.username,
+//           "replies.$[reply].userProfilePic": user.userProfilePic,
+//         },
+//       },
+//       //options
+//       { arrayFilters: [{ "reply.userId": userId }] }
+//     );
+
+//     res.status(200).json({ message: "Profile updated successfully ", user });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//     console.log("Error in updateUser : ", error.message);
+//   }
+// };
 const updateUser = async (req, res) => {
-  //removed password update
   const { name, email, username, bio } = req.body;
-  // let { profilePic } = req.body;
   let profilePic = req.file;
   const userId = req.user._id;
   try {
@@ -194,30 +263,18 @@ const updateUser = async (req, res) => {
     if (req.params.id !== userId.toString())
       return res
         .status(400)
-        .json({ error: "You cannot update other user's profile" });
-    // if (password) {
-    //   const salt = await bcrypt.genSalt(10);
-    //   const hashedPassword = await bcrypt.hash(password, salt);
-    //   user.password = hashedPassword;
-    // }
+        .json({ error: "You cannot update another user's profile" });
 
     if (profilePic) {
-      // destroying old pfp
+      // Destroy old profile picture if it exists
       if (user.profilePic) {
         await cloudinary.uploader.destroy(
           user.profilePic.split("/").pop().split(".")[0]
         );
       }
-      // const uploadedResponse = await cloudinary.uploader.upload(profilePic);
+      // Upload new profile picture to Cloudinary
       const uploadedResponse = await uploadOnCloudinary(profilePic.path);
-      console.log("user img success", uploadedResponse);
       profilePic = uploadedResponse.secure_url;
-      // Upload the image to Cloudinary
-      // const uploadedResponse = await cloudinary.uploader.upload(req.file.path);
-      // profilePic = uploadedResponse.secure_url;
-
-      // Delete the temporary file
-      // fs.unlinkSync(req.file.path);
     }
 
     user.name = name || user.name;
@@ -226,32 +283,29 @@ const updateUser = async (req, res) => {
     user.profilePic = profilePic || user.profilePic;
     user.bio = bio || user.bio;
 
-    user = await user.save();
-    //password should be  null in respionse
-    user.password = null;
+    await user.save();
+    user.password = null; // Remove password from the response
 
-    //new optimzed update - to update the users in the replies of the post when the user updates their profile
-    //find all posts that the user has replied and update the username and userProfilePic fields
+    // Update user's replies in posts
     await Post.updateMany(
-      //filter
       { "replies.userId": userId },
-      //update
       {
         $set: {
           "replies.$[reply].username": user.username,
-          "replies.$[reply].userProfilePic": user.userProfilePic,
+          "replies.$[reply].userProfilePic": user.profilePic,
         },
       },
-      //options
       { arrayFilters: [{ "reply.userId": userId }] }
     );
 
-    res.status(200).json({ message: "Profile updated successfully ", user });
+    res.status(200).json({ message: "Profile updated successfully", user });
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    console.log("Error in updateUser : ", error.message);
+    console.error("Error in updateUser:", error.message);
+    res.status(500).json({ error: "Server error. Please try again later." });
   }
 };
+
+module.exports = { updateUser };
 
 const forgotPassword = async (req, res) => {
   try {
@@ -268,7 +322,7 @@ const forgotPassword = async (req, res) => {
 
     await user.save();
 
-    const resetUrl = `https://gamifyv2.vercel.app/reset-password/${token}`;
+    const resetUrl = `http://localhost:3000/reset-password/${token}`;
     const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process:\n\n${resetUrl}\n\nIf you did not request this, please ignore this email and your password will remain unchanged.`;
 
     await sendEmail(user.email, "Password Reset", message);
