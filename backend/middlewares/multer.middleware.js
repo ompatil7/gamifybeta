@@ -1,11 +1,14 @@
-const multer = require("multer");
-const path = require("path");
-const cloudinary = require("cloudinary").v2;
-const { uploadOnCloudinary } = require("./utils/cloudinary");
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Resolve __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "public", "temp"));
+    cb(null, path.join(__dirname, '../public/temp'));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -14,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-module.exports = { upload };
+export { upload };
 
 // import multer from "multer";
 
