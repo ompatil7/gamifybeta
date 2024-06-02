@@ -6,12 +6,23 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import { v2 as cloudinary } from "cloudinary";
-// import path from "path";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from "cors";
 import { app, server } from "./socket/socket.js";
 
 //to use the import syntax we changed the type to module
 //instead of using require
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure the directory exists
+const tempDir = path.join(__dirname, './public/temp');
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
+
 dotenv.config();
 connectDB();
 // const __dirname = path.resolve();
