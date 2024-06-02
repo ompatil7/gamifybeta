@@ -6,13 +6,7 @@ import Conversation from "../models/conversationModel.js";
 //create an express instance
 const app = express();
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "https://gamifyv2.vercel.app"],
 
-    credentials: true,
-  })
-);
 //create a new http server and bind it with the express instance
 const server = http.createServer(app);
 
