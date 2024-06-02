@@ -305,7 +305,6 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { updateUser };
 
 const forgotPassword = async (req, res) => {
   try {
