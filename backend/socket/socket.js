@@ -6,7 +6,6 @@ import Conversation from "../models/conversationModel.js";
 //create an express instance
 const app = express();
 
-
 //create a new http server and bind it with the express instance
 const server = http.createServer(app);
 
@@ -19,6 +18,7 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
     credentials: true,
   },
+  transports: ["websocket"],
 });
 
 export const getRecipientSocketId = (recipientId) => {
