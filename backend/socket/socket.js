@@ -5,6 +5,14 @@ import Message from "../models/messageModel.js";
 import Conversation from "../models/conversationModel.js";
 //create an express instance
 const app = express();
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://gamifyv2.vercel.app"],
+
+    credentials: true,
+  })
+);
 //create a new http server and bind it with the express instance
 const server = http.createServer(app);
 
@@ -13,7 +21,7 @@ const server = http.createServer(app);
 //by using this we can handle any http request and also any socket io operation required
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://gamifyv2.vercel.app"], //react app
+    origin: ["http://localhost:3000", "https://gamifyv2.vercel.app"],
     methods: ["GET", "POST"],
     credentials: true,
   },
