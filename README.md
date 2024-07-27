@@ -102,6 +102,3 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
----
-
-Feel free to customize and enhance this README as needed. This should provide a solid foundation for presenting your Gamify project effectively.
